@@ -66,7 +66,7 @@ The application provides:
 - Vessel confidence distribution
 - Segmentation mask download
 
-Run the development server with:
+Run the development server:
 
     python manage.py runserver
 
@@ -111,11 +111,13 @@ Run Django:
 
 The complete pipeline is operational:
 
-DRIVE dataset
-? preprocessing
-? patch generation
-? U-Net training
-? threshold optimization
-? test prediction
-? Django inference
-? segmentation visualization and statistics
+1. DRIVE dataset
+2. Preprocessing
+3. Patch generation
+4. U-Net training
+5. Threshold optimization
+6. Test prediction
+7. Django inference
+8. Segmentation visualization and statistics
+9. Automated Django tests
+
