@@ -1,9 +1,17 @@
 # Retinal Vessel Segmentation
 
+A U-Net based retinal blood vessel segmentation system using the DRIVE retinal fundus dataset, with a Django web interface for image upload, segmentation, visualization, and analysis.
+
 ## Dataset
+
 DRIVE retinal fundus dataset.
 
+- Training images: 20
+- Evaluation images: 20
+- Test images: 20
+
 ## Preprocessing
+
 - Green-channel extraction
 - CLAHE enhancement
 - FOV masking
@@ -11,48 +19,103 @@ DRIVE retinal fundus dataset.
 - 64x64 patch generation
 
 ## Model
+
 U-Net for binary retinal vessel segmentation.
 
-## Training
-- Training images: 18
-- Validation images: 2
-- Epochs: 30
+- Training epochs: 30
 - Best checkpoint: epoch 24
-- Device: CPU
+- Inference device: CPU
+- Patch size: 64x64
+- Patch stride: 16
 
-## Results
-Best validation Dice: 0.7358
-Best validation IoU: 0.6065
+## Threshold Optimization
 
-Training-set mean Dice: 0.8260
-Training-set mean IoU: 0.7043
+The inference threshold was evaluated on all 20 available DRIVE training images using thresholds from 0.05 to 0.50.
+
+The best threshold by Dice score was:
+
+- Threshold: 0.50
+- Dice: 82.63%
+- IoU: 70.46%
+- Precision: 82.27%
+- Recall: 83.26%
+- Accuracy: 96.99%
+
+The selected inference threshold is therefore **0.50**.
 
 ## Test Predictions
-20 DRIVE test images were processed successfully.
 
-Mean predicted vessel coverage: 8.88%.
+All 20 DRIVE test images were processed successfully.
+
+Predicted vessel coverage ranged from approximately 7.29% to 10.87%.
+
+## Web Application
+
+A Django web application is included for interactive inference.
+
+The application provides:
+
+- Retinal image upload
+- U-Net vessel segmentation
+- Original image display
+- Binary segmentation mask
+- Vessel overlay visualization
+- Vessel coverage statistics
+- Pixel intensity statistics
+- Model probability statistics
+- Vessel confidence distribution
+- Segmentation mask download
+
+Run the development server with:
+
+    python manage.py runserver
+
+Then open:
+
+    http://127.0.0.1:8000/
 
 ## Project Structure
-- src/ - source code
-- data/ - datasets and processed data
-- checkpoints/ - trained model
-- outputs/ - generated predictions
-- results/ - final result files
-- requirements.txt - Python dependencies
+
+- `src/` - model training, preprocessing, evaluation, and test prediction
+- `segmentation/` - Django segmentation application and inference
+- `webapp/` - Django project configuration
+- `data/` - datasets and processed data
+- `checkpoints/` - trained model checkpoint
+- `outputs/` - generated predictions
+- `results/` - result files
+- `requirements.txt` - Python dependencies
 
 ## Reproducibility
-Install dependencies with:
+
+Install dependencies:
 
     pip install -r requirements.txt
 
-Train:
+Train the model:
 
     python src/train.py
 
-Evaluate:
+Evaluate the model:
 
     python src/evaluate.py
 
 Generate DRIVE test predictions:
 
     python src/predict_test.py
+
+Run Django:
+
+    python manage.py runserver
+
+## Current Status
+
+The complete pipeline is operational:
+
+DRIVE dataset
+? preprocessing
+? patch generation
+? U-Net training
+? threshold optimization
+? test prediction
+? Django inference
+? segmentation visualization and statistics
