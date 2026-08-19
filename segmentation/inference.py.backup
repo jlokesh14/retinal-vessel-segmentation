@@ -1,0 +1,141 @@
+from pathlib import Path
+import cv2
+import numpy as np
+import torch
+
+from src.models.unet import UNet
+
+
+ROOT = Path(__file__).resolve().parent.parent
+CHECKPOINT = ROOT / "checkpoints" / "best_unet.pth"
+
+PATCH_SIZE = 64
+STRIDE = 64
+THRESHOLD = 0.5
+
+
+class VesselSegmenter:
+
+    def __init__(self):
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        self.model = UNet().to(self.device)
+
+        checkpoint = torch.load(
+            CHECKPOINT,
+            map_location=self.device
+        )
+
+        self.model.load_state_dict(
+            checkpoint["model_state_dict"]
+        )
+
+        self.model.eval()
+
+    def predict(self, image):
+
+        if image is None:
+            raise ValueError("Invalid image.")
+
+        if len(image.shape) == 3:
+            image = cv2.cvtColor(
+                image,
+                cv2.COLOR_BGR2GRAY
+            )
+
+        height, width = image.shape
+
+        prediction_sum = np.zeros(
+            (height, width),
+            dtype=np.float32
+        )
+
+        prediction_count = np.zeros(
+            (height, width),
+            dtype=np.float32
+        )
+
+        y_positions = list(
+            range(
+                0,
+                max(1, height - PATCH_SIZE + 1),
+                STRIDE
+            )
+        )
+
+        x_positions = list(
+            range(
+                0,
+                max(1, width - PATCH_SIZE + 1),
+                STRIDE
+            )
+        )
+
+        if y_positions[-1] != height - PATCH_SIZE:
+            y_positions.append(
+                max(0, height - PATCH_SIZE)
+            )
+
+        if x_positions[-1] != width - PATCH_SIZE:
+            x_positions.append(
+                max(0, width - PATCH_SIZE)
+            )
+
+        with torch.no_grad():
+
+            for y in y_positions:
+                for x in x_positions:
+
+                    patch = image[
+                        y:y + PATCH_SIZE,
+                        x:x + PATCH_SIZE
+                    ]
+
+                    if patch.shape != (
+                        PATCH_SIZE,
+                        PATCH_SIZE
+                    ):
+                        continue
+
+                    patch = (
+                        patch.astype(np.float32)
+                        / 255.0
+                    )
+
+                    tensor = torch.from_numpy(
+                        patch[None, None, :, :]
+                    ).to(self.device)
+
+                    logits = self.model(tensor)
+
+                    probability = torch.sigmoid(
+                        logits
+                    )[0, 0].cpu().numpy()
+
+                    prediction_sum[
+                        y:y + PATCH_SIZE,
+                        x:x + PATCH_SIZE
+                    ] += probability
+
+                    prediction_count[
+                        y:y + PATCH_SIZE,
+                        x:x + PATCH_SIZE
+                    ] += 1
+
+        valid = prediction_count > 0
+
+        reconstructed = np.zeros(
+            (height, width),
+            dtype=np.float32
+        )
+
+        reconstructed[valid] = (
+            prediction_sum[valid]
+            / prediction_count[valid]
+        )
+
+        prediction = (
+            reconstructed >= THRESHOLD
+        ).astype(np.uint8) * 255
+
+        return prediction

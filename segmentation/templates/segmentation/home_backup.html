@@ -1,0 +1,350 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Retinal Vessel Segmentation</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            color: #cbd5e1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .upload-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .upload-form {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: #f9fafb;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 11px 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .error {
+            color: #dc2626;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .info {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .stat {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+            min-width: 180px;
+        }
+
+        .stat-title {
+            color: #6b7280;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .result-card h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .result-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .download {
+            display: inline-block;
+            margin-top: 15px;
+            background: #16a34a;
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+        }
+
+        .download:hover {
+            background: #15803d;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="header">
+
+    <h1>Retinal Vessel Segmentation</h1>
+
+    <p>
+        U-Net based retinal blood vessel segmentation
+    </p>
+
+</div>
+
+
+<div class="container">
+
+
+    <div class="upload-card">
+
+        <h2>Upload Retinal Image</h2>
+
+        <form method="post"
+              enctype="multipart/form-data"
+              class="upload-form">
+
+            {% csrf_token %}
+
+            <input
+                type="file"
+                name="retinal_image"
+                accept="image/*"
+                required
+            >
+
+            <button type="submit">
+                Segment Image
+            </button>
+
+        </form>
+
+        {% if error %}
+
+            <div class="error">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    {% if uploaded_name %}
+
+        <div class="info">
+
+            <strong>Processed image:</strong>
+            {{ uploaded_name }}
+
+        </div>
+
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <div class="stat-title">
+                    Image Width
+                </div>
+
+                <div class="stat-value">
+                    {{ image_width }} px
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-title">
+                    Image Height
+                </div>
+
+                <div class="stat-value">
+                    {{ image_height }} px
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-title">
+                    Vessel Coverage
+                </div>
+
+                <div class="stat-value">
+                    {{ vessel_coverage }}%
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="results">
+
+
+            <div class="result-card">
+
+                <h2>
+                    Original Retinal Image
+                </h2>
+
+                <img
+                    src="data:image/png;base64,{{ original_image }}"
+                    alt="Original retinal image"
+                >
+
+            </div>
+
+
+            <div class="result-card">
+
+                <h2>
+                    Vessel Segmentation
+                </h2>
+
+                <img
+                    src="data:image/png;base64,{{ result_image }}"
+                    alt="Vessel segmentation"
+                >
+
+                <a
+                    class="download"
+                    href="data:image/png;base64,{{ result_image }}"
+                    download="vessel_segmentation.png"
+                >
+                    Download Mask
+                </a>
+
+            </div>
+
+
+            <div class="result-card">
+
+                <h2>
+                    Vessel Overlay
+                </h2>
+
+                <img
+                    src="data:image/png;base64,{{ overlay_image }}"
+                    alt="Vessel overlay"
+                >
+
+            </div>
+
+
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+
+<footer>
+
+    Retinal Vessel Segmentation • U-Net
+
+</footer>
+
+
+</body>
+
+</html>
+

@@ -1,0 +1,7 @@
+checkpoints/
+data/
+outputs/
+results/
+db.sqlite3
+__pycache__/
+*.pyc
