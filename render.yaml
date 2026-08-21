@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: retinal-vessel-segmentation
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn webapp.wsgi:application
+    envVars:
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: ".onrender.com"
