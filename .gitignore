@@ -7,3 +7,4 @@ __pycache__/
 *.pyc
 !checkpoints/best_unet.pth
 !checkpoints/best_unet.pth
+.env
