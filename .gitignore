@@ -1,7 +1,9 @@
-checkpoints/
+checkpoints/*
 data/
 outputs/
 results/
 db.sqlite3
 __pycache__/
 *.pyc
+!checkpoints/best_unet.pth
+!checkpoints/best_unet.pth
