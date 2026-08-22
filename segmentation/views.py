@@ -7,7 +7,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from .inference import VesselSegmenter
 
 
-segmenter = VesselSegmenter()
+segmenter = None
 
 
 def image_to_base64(image):
@@ -51,6 +51,9 @@ def home(request):
             )
 
         # Run trained U-Net
+        global segmenter
+        if segmenter is None:
+            segmenter = VesselSegmenter()
         prediction, probability_map = segmenter.predict(
             image,
             return_probability=True
