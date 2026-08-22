@@ -8,3 +8,17 @@ __pycache__/
 !checkpoints/best_unet.pth
 !checkpoints/best_unet.pth
 .env
+
+cookies.txt
+output.txt
+page.html
+response.html
+response2.html
+response3.html
+response4.html
+vessel_segmentation.png
+
+MinorProjectDocumentation.docx
+MinorProjectDocumentation.pdf
+Nagrik & Samvidhan Individual HARSH.docx
+Retinal_Vessel_Segmentation_Project_Presentation.pptx
