@@ -547,7 +547,9 @@
 
 
 
-        <form method="post" onsubmit="document.getElementById('loading').classList.add('active'); this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Processing...';"
+        <form method="post" 
+            {% csrf_token %}
+onsubmit="document.getElementById('loading').classList.add('active'); this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Processing...';"
 
               enctype="multipart/form-data"
 
@@ -1160,6 +1162,8 @@
 
 
 </html>
+
+
 
 
 
