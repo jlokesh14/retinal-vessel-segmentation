@@ -2,12 +2,6 @@
 
 A U-Net based retinal blood vessel segmentation system using the DRIVE retinal fundus dataset, with a Django web interface for image upload, segmentation, visualization, and analysis.
 
-## Demo Result
-
-![Retinal vessel segmentation overlay](screenshots/vessel_overlay.png)
-
-The overlay shows the predicted retinal blood vessels produced by the trained U-Net model.
-
 ## Dataset
 
 DRIVE retinal fundus dataset.
@@ -128,3 +122,13 @@ The complete pipeline is operational:
 8. Segmentation visualization and statistics
 9. Automated Django tests
 
+
+## Output Screenshots
+
+![Output Visual 1](OutputScreenshots/Output_visual1.png)
+
+![Output Visual 2](OutputScreenshots/Output_visual2.png)
+
+![Output Visual 3](OutputScreenshots/Output_visual3.png)
+
+![Output Visual 4](OutputScreenshots/Output_visual4.png)
